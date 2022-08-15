@@ -28,6 +28,8 @@ const socketMain = (io: Server, connection: Socket) => {
     connection.on('disconnect', async (macAddress) => {
         await Machine.findOneAndUpdate({macAddress}, {lastActive: new Date()});
     });
+
+
 }
 
 export default socketMain;

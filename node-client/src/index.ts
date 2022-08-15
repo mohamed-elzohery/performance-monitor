@@ -28,6 +28,8 @@ socket.on("connect", () => {
         clearInterval(getPerformanceDataInterval);
     });
 });
+import { resolve } from 'path';
+
 // CPU avg laod
 const getInstantCpuLoad = (cpus:CpuInfo[] ) => {
     let idleTime = 0;
