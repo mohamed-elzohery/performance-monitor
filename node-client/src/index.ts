@@ -1,6 +1,33 @@
 import os, { CpuInfo } from 'os';
-import { resolve } from 'path';
+import { io } from 'socket.io-client';
 
+let macAddress: string;
+// Socket connection
+const socket = io('http://127.0.0.1:8181', {transports: ['websocket']});
+
+socket.on("connect", () => {
+    console.log('client is connected to server');
+
+    const interfaces = os.networkInterfaces();
+    for(let key in interfaces){
+        if(!interfaces[key]![0].internal){
+            macAddress = interfaces[key]![0].mac;
+            socket.emit('connect-machine', macAddress);
+            return;
+        }
+        break;
+    }
+
+
+    let getPerformanceDataInterval = setInterval( async () => {
+        const performanceData = await getMachineInfo();
+        socket.emit('send-performance', performanceData);
+    }, 1000);
+
+    socket.on('disconnect', () => {
+        clearInterval(getPerformanceDataInterval);
+    });
+});
 // CPU avg laod
 const getInstantCpuLoad = (cpus:CpuInfo[] ) => {
     let idleTime = 0;
@@ -67,5 +94,10 @@ const getMachineInfo = () => {
         })
     });
 };
+
+process.on('exit', () => {
+    socket.emit('disconnect', macAddress)
+});
+
 
 getMachineInfo().then(console.log);

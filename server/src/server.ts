@@ -54,6 +54,7 @@ if (cluster.isPrimary) {
 		// We received a connection and need to pass it to the appropriate
 		// worker. Get the worker for this connection's source IP and pass
 		// it the connection.
+		console.log(connection.remoteAddress);
 		let worker = workers[worker_index(connection.remoteAddress!, num_processes)];
 		worker.send('sticky-session:connection', connection);
     });
@@ -68,8 +69,8 @@ if (cluster.isPrimary) {
 	// Don't expose our internal server to the outside world.
     const server = app.listen(0, 'localhost');
     // console.log("Worker listening...");    
-    const io = new Server();
-    const pubClient = createClient({socket: { host: 'localhost', port: 6379 }});
+    const io = new Server(server);
+    const pubClient = createClient({socket: { host: '127.0.0.1', port: 6379 }});
     const subClient = pubClient.duplicate();
 
 	// Tell Socket.IO to use the redis adapter. By default, the redis
@@ -78,16 +79,17 @@ if (cluster.isPrimary) {
 	// redis-cli monitor
 	Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
         io.adapter(createAdapter(pubClient, subClient));
-      });
+      }).catch(console.log);
 
     // Here you might use Socket.IO middleware for authorization etc.
 	// on connection, send the socket over to our module with socket stuff
     io.on('connection', function(socket: Socket) {
 		socketMain(io,socket);
+		console.log(cluster.worker?.id)
+		console.log("client connected")
 		// console.log(`connected to worker: ${cluster.worker.id}`);
     });
 
-		socketMain(io,null);
 
 	// Listen to messages sent from the master. Ignore everything else.
 	process.on('message', function(message, connection: net.Socket) {
