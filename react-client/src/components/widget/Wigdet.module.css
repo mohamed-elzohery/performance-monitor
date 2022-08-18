@@ -1,0 +1,7 @@
+.machineList__item{
+    padding: 2rem;
+    background-color: #FFF;
+    box-shadow: var(--shadow-light);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  }

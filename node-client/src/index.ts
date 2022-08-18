@@ -70,7 +70,7 @@ const getAverageCpuLoad: () => Promise<number> = () => {
             const avgTotalTime = endLoad.totalTime - startLoad.totalTime;
             const avgLoadTime = +((avgTotalTime - avgIdleTime) / avgTotalTime).toFixed(2) * 100;
             resolve(avgLoadTime);
-        } ,1000)
+        } ,1600)
     });
 }
 

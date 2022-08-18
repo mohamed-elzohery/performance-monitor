@@ -1,4 +1,4 @@
-export interface PerformanceData{
+export interface Machine{
     totalMemory: number,
     freeMemory: number,
     usedMemory: number,

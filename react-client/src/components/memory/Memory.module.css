@@ -1,0 +1,21 @@
+.memory{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.memoryUsage{
+    color: #000;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.memory__info{
+    margin-top: 1rem;
+    display: grid;
+    justify-items: center;
+    row-gap: 1rem;
+}
+.memory__txt{
+    font-size: 1.6rem;
+}

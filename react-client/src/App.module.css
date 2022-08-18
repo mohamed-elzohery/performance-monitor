@@ -14,8 +14,3 @@
   align-items: start;
 }
 
-.machineList__item{
-  padding: 2rem;
-  background-color: #FFF;
-  box-shadow: var(--shadow-light);
-}
