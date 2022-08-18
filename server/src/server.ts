@@ -69,7 +69,12 @@ if (cluster.isPrimary) {
 	// Don't expose our internal server to the outside world.
     const server = app.listen(0, 'localhost');
     // console.log("Worker listening...");    
-    const io = new Server(server);
+    const io = new Server(server, {
+		cors: {
+		  origin: "*",
+		  methods: ["GET", "POST"]
+		}
+	  });
     const pubClient = createClient({socket: { host: 'localhost', port: 6379 }});
     const subClient = pubClient.duplicate();
 

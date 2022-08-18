@@ -1,34 +1,46 @@
 import os, { CpuInfo } from 'os';
 import { io } from 'socket.io-client';
 
+export interface PerformanceData{
+    totalMemory: number,
+    freeMemory: number,
+    usedMemory: number,
+    memoryUsage: number,
+    osType: string,
+    upTime: number,
+    cpuModel: string,
+    cpuSpeed: number,
+    numberOfCores: number,
+    avgLoad: number,
+    macAddress: string
+}
+
 let macAddress: string;
 // Socket connection
 const socket = io('http://127.0.0.1:8181', {transports: ['websocket']});
 
 socket.on("connect", () => {
     console.log('client is connected to server');
-
     const interfaces = os.networkInterfaces();
     for(let key in interfaces){
         if(!interfaces[key]![0].internal){
             macAddress = interfaces[key]![0].mac;
             socket.emit('connect-machine', macAddress);
-            return;
+            break;
         }
-        break;
     }
 
-
     let getPerformanceDataInterval = setInterval( async () => {
-        const performanceData = await getMachineInfo();
+        const performanceData: any = await getMachineInfo();
+        performanceData.macAddress = macAddress;
         socket.emit('send-performance', performanceData);
     }, 1000);
 
     socket.on('disconnect', () => {
         clearInterval(getPerformanceDataInterval);
     });
+
 });
-import { resolve } from 'path';
 
 // CPU avg laod
 const getInstantCpuLoad = (cpus:CpuInfo[] ) => {
@@ -48,7 +60,7 @@ const getInstantCpuLoad = (cpus:CpuInfo[] ) => {
 
 
 
-const getAverageCpuLoad = () => {
+const getAverageCpuLoad: () => Promise<number> = () => {
     return new Promise((resolve, reject) => {
         const startLoad = getInstantCpuLoad(os.cpus());
 
@@ -62,7 +74,7 @@ const getAverageCpuLoad = () => {
     });
 }
 
-const getMachineInfo = () => {
+const getMachineInfo: () => Promise<PerformanceData> = () => {
     return new Promise(async (reslove, reject) => {
         const cpus = os.cpus();
 
@@ -81,6 +93,7 @@ const getMachineInfo = () => {
         const cpuSpeed = cpus[0].speed;
         const numberOfCores = cpus.length;
         const avgLoad = await getAverageCpuLoad();
+        
 
         reslove({
             totalMemory,
@@ -92,7 +105,8 @@ const getMachineInfo = () => {
             cpuModel,
             cpuSpeed,
             numberOfCores,
-            avgLoad
+            avgLoad,
+            macAddress
         })
     });
 };

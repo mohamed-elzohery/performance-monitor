@@ -1,0 +1,21 @@
+.app__container{
+  display: grid;
+  grid-template-columns: 1fr minmax(40rem, 100rem) 1fr;
+  min-height: 100vh;
+  background-color: var(--color-grey);
+}
+
+.machineList{
+  list-style: none;
+  align-content: start;
+  grid-column: 2 / 3;
+  display: grid;
+  row-gap: 2rem;
+  align-items: start;
+}
+
+.machineList__item{
+  padding: 2rem;
+  background-color: #FFF;
+  box-shadow: var(--shadow-light);
+}
